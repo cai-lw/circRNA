@@ -19,31 +19,36 @@ if args.v < 0 or args.v > 9:
 SAMPLE_PER_GROUP = 1000
 if args.debug:
     BATCH_SIZE = 10
+    HIDDEN_NODES = 32
     SAMPLE_PER_EPOCH = BATCH_SIZE
     N_EPOCH = 1
     N_VAL_SAMPLES = 10
 else:
     # Set parameters for actual training here
     BATCH_SIZE = 20
+    HIDDEN_NODES = 64
     # Note: Log is printed every epoch.
     # Training ends after SAMPLE_PER_EPOCH * N_EPOCH samples are processed.
     # SAMPLE_PER_EPOCH / BATCH_SIZE must be an integer
     SAMPLE_PER_EPOCH = SAMPLE_PER_GROUP
     N_EPOCH = 9
     # N_VAL_SAMPLES / BATCH_SIZE must be an integer
-    N_VAL_SAMPLES = 1000
+    N_VAL_SAMPLES = SAMPLE_PER_GROUP
 
+try:
+    os.mkdir(str(args.v))
+except FileExistsError:
+    pass
+oldStdout = sys.stdout
+file = open(str(args.v) + '/log', 'w')
+sys.stdout = file
 
 # model description
 model = Sequential()
 model.add(Masking(input_shape=(MAXLEN, 5 if args.alu else 4)))
 # 32 hidden nodes should work, but you can try larger number on powerful computers.
 # Switch `consume_less` from `mem` to `gpu` if you have sufficient GPU memory
-os.mkdir(str(args.v))
-oldStdout = sys.stdout
-file = open(str(args.v) + '/log', 'w')
-sys.stdout = file
-model.add(LSTM(64, return_sequences=False, consume_less='mem'))
+model.add(LSTM(HIDDEN_NODES, return_sequences=False, consume_less='mem'))
 model.add(Dense(1, activation='sigmoid'))
 model.compile(loss='binary_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
 model.fit_generator(data_gen(filter(lambda x: x != args.v, range(10)), BATCH_SIZE, SAMPLE_PER_GROUP, args.alu),
