@@ -8,8 +8,8 @@ neg_loci = {}
 alu_loci = {}
 
 group = 0
-with open('raw_data/hsa_hg19_Rybak2015.bed', newline='') as csvfile:
-    bed = csv.reader(csvfile, delimiter="\t")
+with open('raw_data/hsa_hg19_Rybak2015.bed', 'rb') as csvfile:
+    bed = csv.reader(csvfile, delimiter='\t')
     for rec in bed:
         t = (int(rec[1]), int(rec[2]), rec[5], group)
         if t[1] <= t[0]:
@@ -20,8 +20,8 @@ with open('raw_data/hsa_hg19_Rybak2015.bed', newline='') as csvfile:
         except KeyError:
             pos_loci[rec[0]] = [t]
 
-with open('raw_data/all_exons.bed', newline='') as csvfile:
-    bed = csv.reader(csvfile, delimiter=" ")
+with open('raw_data/all_exons.bed', 'rb') as csvfile:
+    bed = csv.reader(csvfile, delimiter=' ')
     for rec in bed:
         t = (int(rec[2]), int(rec[4]), rec[6], group)
         if t[1] <= t[0]:
@@ -32,7 +32,7 @@ with open('raw_data/all_exons.bed', newline='') as csvfile:
         except KeyError:
             neg_loci[rec[0]] = [t]
 
-with open('raw_data/hg19_Alu.bed', newline='') as csvfile:
+with open('raw_data/hg19_Alu.bed', 'rb') as csvfile:
     bed = csv.reader(csvfile, delimiter='\t')
     for rec in bed:
         t = (int(rec[1]), int(rec[2]), rec[5])
@@ -43,16 +43,13 @@ with open('raw_data/hg19_Alu.bed', newline='') as csvfile:
         except KeyError:
             alu_loci[rec[0]] = [t]
 
-print("Pos Num: %d" % sum(map(len, pos_loci.values())))
-print("Pos Max Len: %d" % max(map(lambda t:t[1] - t[0], chain.from_iterable(pos_loci.values()))))
-print("Neg Num: %d" % sum(map(len, neg_loci.values())))
-print("Neg Max Len: %d" % max(map(lambda t:t[1] - t[0], chain.from_iterable(neg_loci.values()))))
-print("Alu Num: %d" % sum(map(len, alu_loci.values())))
+pos_count = 0
+neg_count = 0
 
-f_pos = [open("clean_data/pos%d.txt" % i, "w") for i in range(10)]
-f_neg = [open("clean_data/neg%d.txt" % i, "w") for i in range(10)]
+f_pos = [open('clean_data/pos%d.txt' % i, 'w') for i in range(10)]
+f_neg = [open('clean_data/neg%d.txt' % i, 'w') for i in range(10)]
 
-for chromo in SeqIO.parse("raw_data/hg19.fa", "fasta"):
+for chromo in SeqIO.parse('raw_data/hg19.fa', 'fasta'):
     pseq = chromo.seq.upper().tomutable()
     nseq = chromo.seq.upper().tomutable()
     pos_recs = pos_loci.get(chromo.id, [])
@@ -69,12 +66,14 @@ for chromo in SeqIO.parse("raw_data/hg19.fa", "fasta"):
         else:
             dna = str(nseq[rec[0]:rec[1]].toseq().reverse_complement())
         f_pos[rec[3]].write(dna + '\n')
+        pos_count += 1
     for rec in neg_recs:
         if rec[2] == '+':
             dna = str(pseq[rec[0]:rec[1]])
         else:
             dna = str(nseq[rec[0]:rec[1]].toseq().reverse_complement())
         f_neg[rec[3]].write(dna + '\n')
+        neg_count += 1
 
 for i in range(10):
     f_pos[i].close()
