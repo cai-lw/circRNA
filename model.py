@@ -45,7 +45,7 @@ file = open(str(args.v) + '/log', 'w')
 sys.stdout = file
 model.add(LSTM(64, return_sequences=False, consume_less='mem'))
 model.add(Dense(1, activation='sigmoid'))
-model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+model.compile(loss='binary_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
 model.fit_generator(data_gen(filter(lambda x: x != args.v, range(10)), BATCH_SIZE, SAMPLE_PER_GROUP, args.alu),
     samples_per_epoch=SAMPLE_PER_EPOCH, nb_epoch=N_EPOCH, callbacks=[
     ModelCheckpoint(filepath = str(args.v) + '/model', monitor='val_loss', mode='auto')])
