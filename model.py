@@ -1,8 +1,11 @@
+import sys
+import os
 from argparse import ArgumentParser, ArgumentError
 from sklearn.metrics import *
 from keras.models import Sequential
 from keras.layers import *
 from keras.layers.recurrent import LSTM
+from keras.callbacks import ModelCheckpoint
 from datagen import *
 
 parser = ArgumentParser()
@@ -36,11 +39,16 @@ model = Sequential()
 model.add(Masking(input_shape=(MAXLEN, 5 if args.alu else 4)))
 # 32 hidden nodes should work, but you can try larger number on powerful computers.
 # Switch `consume_less` from `mem` to `gpu` if you have sufficient GPU memory
-model.add(LSTM(32, return_sequences=False, consume_less='mem'))
+os.mkdir(str(args.v))
+oldStdout = sys.stdout
+file = open(str(args.v) + '/log', 'w')
+sys.stdout = file
+model.add(LSTM(64, return_sequences=False, consume_less='mem'))
 model.add(Dense(1, activation='sigmoid'))
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 model.fit_generator(data_gen(filter(lambda x: x != args.v, range(10)), BATCH_SIZE, SAMPLE_PER_GROUP, args.alu),
-    samples_per_epoch=SAMPLE_PER_EPOCH, nb_epoch=N_EPOCH, verbose=2)
+    samples_per_epoch=SAMPLE_PER_EPOCH, nb_epoch=N_EPOCH, callbacks=[
+    ModelCheckpoint(filepath = str(args.v) + '/model', monitor='val_loss', mode='auto')])
 
 def aupr(y_true, y_pred):
     p, r, _ = precision_recall_curve(y_true, y_pred)
@@ -55,3 +63,4 @@ print('Accuracy: %.4f' % accuracy_score(y_true, y_bin_pred))
 print('AUC: %.4f' % roc_auc_score(y_true, y_pred))
 print('AUPR: %.4f' % aupr(y_true, y_pred))
 print('F1 score: %.4f' % f1_score(y_true, y_bin_pred))
+sys.stdout = oldStdout
