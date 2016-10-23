@@ -8,7 +8,7 @@ neg_loci = {}
 alu_loci = {}
 
 group = 0
-with open('raw_data/hsa_hg19_Rybak2015.bed', newline='') as csvfile:
+with open('raw_data/hsa_hg19_Rybak2015.bed', 'rb') as csvfile:
     bed = csv.reader(csvfile, delimiter="\t")
     for rec in bed:
         t = (int(rec[1]), int(rec[2]), rec[5], group)
@@ -20,7 +20,7 @@ with open('raw_data/hsa_hg19_Rybak2015.bed', newline='') as csvfile:
         except KeyError:
             pos_loci[rec[0]] = [t]
 
-with open('raw_data/all_exons.bed', newline='') as csvfile:
+with open('raw_data/all_exons.bed', 'rb') as csvfile:
     bed = csv.reader(csvfile, delimiter=" ")
     for rec in bed:
         t = (int(rec[2]), int(rec[4]), rec[6], group)
@@ -32,7 +32,7 @@ with open('raw_data/all_exons.bed', newline='') as csvfile:
         except KeyError:
             neg_loci[rec[0]] = [t]
 
-with open('raw_data/hg19_Alu.bed', newline='') as csvfile:
+with open('raw_data/hg19_Alu.bed', 'rb') as csvfile:
     bed = csv.reader(csvfile, delimiter='\t')
     for rec in bed:
         t = (int(rec[1]), int(rec[2]), rec[5])

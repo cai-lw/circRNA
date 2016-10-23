@@ -49,8 +49,8 @@ def data_gen(subgroups, sample_per_iter, use_alu):
                 label.append(0)
             if len(ret) >= sample_per_iter:
                 yield (to_x(ret, use_alu), np.array(label))
-                ret.clear()
-                label.clear()
+                del ret[:]
+                del label[:]
 
 dna_dict = {'A' : 0, 'a': 0,
             'T' : 1, 't': 1,
