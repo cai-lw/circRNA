@@ -20,8 +20,8 @@ val_maxlen = 100000
 hidden_nodes = 64
 # Note: Log is printed every epoch.
 # Training ends after BATCH_SIZE * BATCH_PER_EPOCH * N_EPOCH samples are processed.
-batch_size = 100
-batch_per_epoch = 10
+batch_size = 50
+batch_per_epoch = 20
 n_epoch = 100
 # SAMPLE_PER_EPOCH / BATCH_SIZE must be an integer
 n_val_samples = 1000
