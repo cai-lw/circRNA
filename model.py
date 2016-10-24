@@ -9,6 +9,7 @@ from sklearn.metrics import *
 from keras.models import Sequential
 from keras.layers import *
 from keras.layers.recurrent import LSTM
+from keras.optimizers import RMSprop
 from keras.callbacks import ModelCheckpoint
 from datagen import *
 
@@ -26,6 +27,7 @@ sec = 'debug' if args.debug else 'run'
 TRAIN_MAXLEN = cf.getint(sec, 'train_maxlen')
 VAL_MAXLEN = cf.getint(sec, 'val_maxlen')
 BATCH_SIZE = cf.getint(sec, 'batch_size')
+LEARNING_RATE = cf.getfloat(sec, 'learning_rate')
 HIDDEN_NODES = cf.getint(sec, 'hidden_nodes')
 SAMPLE_PER_EPOCH = cf.getint(sec, 'batch_per_epoch') * BATCH_SIZE
 N_EPOCH = cf.getint(sec, 'n_epoch')
@@ -51,7 +53,7 @@ model.add(Masking(input_shape=(None, 5 if args.alu else 4)))
 # Switch `consume_less` from `mem` to `gpu` if you have sufficient GPU memory
 model.add(LSTM(HIDDEN_NODES, return_sequences=False, consume_less='mem'))
 model.add(Dense(1, activation='sigmoid'))
-model.compile(loss='binary_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
+model.compile(loss='binary_crossentropy', optimizer=RMSprop(lr=LEARNING_RATE), metrics=['accuracy'])
 model.fit_generator(data_gen(filter(lambda x: x != args.v, range(10)), sample_per_iter=BATCH_SIZE,
     maxlen=TRAIN_MAXLEN, use_alu=args.alu, sample_per_group=SAMPLE_PER_GROUP, pos_ratio=POS_RATIO),
     samples_per_epoch=SAMPLE_PER_EPOCH, nb_epoch=N_EPOCH, callbacks=[
