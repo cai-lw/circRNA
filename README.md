@@ -35,4 +35,4 @@ where `VERIFICATION_GROUP` is the index of the group used for verification, and 
 
 Note that switching between using and not using Alu information (`--alu` flag on and off) causes the model to recompile, which may take up to several minutes.
 
-If you wish to modify parameters of network and training, you should manually modify them in `model.py`. See comments in it for details.
+Parameters of network and training are in `config.ini`. 

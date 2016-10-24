@@ -1,7 +1,10 @@
 import sys
 import os
 from argparse import ArgumentParser, ArgumentError
-from configparser import ConfigParser
+if sys.version_info < (3,):
+    from ConfigParser import ConfigParser
+else:
+    from configparser import ConfigParser
 from sklearn.metrics import *
 from keras.models import Sequential
 from keras.layers import *
@@ -44,8 +47,9 @@ sys.stdout = file
 
 # model description
 model = Sequential()
+model.add(Masking(input_shape=(None, 5 if args.alu else 4)))
 # Switch `consume_less` from `mem` to `gpu` if you have sufficient GPU memory
-model.add(LSTM(HIDDEN_NODES, input_shape=(None, 5 if args.alu else 4), return_sequences=False, consume_less='mem'))
+model.add(LSTM(HIDDEN_NODES, return_sequences=False, consume_less='mem'))
 model.add(Dense(1, activation='sigmoid'))
 model.compile(loss='binary_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
 model.fit_generator(data_gen(filter(lambda x: x != args.v, range(10)), sample_per_iter=BATCH_SIZE,
