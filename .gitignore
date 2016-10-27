@@ -100,4 +100,3 @@ ENV/
 9/
 report/
 !report/*.tex
-!report/resources/
