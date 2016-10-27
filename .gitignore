@@ -98,3 +98,6 @@ ENV/
 7/
 8/
 9/
+report/
+!report/*.tex
+!report/resources/

@@ -1,5 +1,5 @@
 \documentclass[10pt,a4paper]{article}
-\usepackage[CJKchecksingle,CJKnumber]{xeCJK}
+%\usepackage[CJKchecksingle,CJKnumber]{xeCJK}
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{fancyhdr}
@@ -27,14 +27,14 @@ breaklinks, colorlinks, linkcolor=blue, urlcolor=blue]{hyperref}
 \pagestyle{fancy}
 \rhead{Advanced Applications of Machine Learning}
 
-\title{	
+\title{Detecting circRNA with LSTM RNN \\
 \normalfont \normalsize
 \textsc{Department of Electronic Engineering} \\ [25pt]
 \horrule{0.5pt} \\[0.4cm] % Thin top horizontal rule
 \huge Project 1 For Advanced Applications of Machine Learning\\ % The assignment title
 \horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule
 }
-\author{ Liwei Cai\\
+\author{ Liwei Cai 2014011255\\
 	Kaidi Cao 2014012282 } % Your name
 
 \date{\normalsize\today} % Today's date or a custom date
@@ -51,16 +51,29 @@ breaklinks, colorlinks, linkcolor=blue, urlcolor=blue]{hyperref}
 \section{Introduction}
 
 \section{Our Approach}
-
+We trained a simple LSTM RNN as the classifier, which takes an encoded sequence of DNA as input and produces a single number between 0-1 as prediction.
+\subsection{Pipeline}
+\par The network structure is simple: a standard LSTM layer with 64 hidden nodes, stacked with a fully-connected, single-output layer with sigmoid activation. Although being ultimately simple, it is proved to be effective in some other sequence classifying tasks. 
+\par Each DNA base is encoded into a 4-dimensional vector with one-hot encoding. When Alu information is used, an extra dimension is used to indicate whether this base belongs to an Alu sequence.
+\par Of course, samples will be weighted, to balance positive and negative samples. Weights are only determined by numbers of positive and negative sequences, regardless of their length, although it may very greatly.
+\subsection{Trick: only train on short sequences}
+\par Due to limited computation power, training on the whole dataset, which contains many long sequences with tens or even hundreds of thousands of bases, is impossible in our circumstance. We suggest that only train on short sequences should not worsen the result much, while making training practical.
+\par Although it is obviously a biased sampling of the original dataset, it keeps many features that our network can capture:
+\begin{itemize}
+\item Statistics about average, such as GC ratio which is proved important, is irrelevant to length, thus unaffected.
+\item LSTM is theoretically capable for capturing long-range relevance of the sequence, but within a limited training steps it is impossible to "remember" for arbitrarily long. Using sequences longer than LSTM can "remember" cannot make it capture more feature.
+\item Slicing from long sequence does keep statistics and short-range relevance, but loses information about absolute position. Using short sequences does not suffer from that.
+\end{itemize}
+Thus, if we believe that short and long sequences are similar enough, only using short sequences does not differs much from using all sequences, in terms of features that can be captured. 
 \section{Experiments}
 
-\section{Conclustion}
+\section{Conclusion}
 
-\section*{Acknowledgements}
+\section*{Acknowledgments}
 
 \newpage
 
-\section*{Rerferences}
+\section*{References}
 
 \end{spacing}
 \end{document} 

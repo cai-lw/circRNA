@@ -14,9 +14,9 @@ from keras.callbacks import ModelCheckpoint
 from datagen import *
 
 parser = ArgumentParser()
-parser.add_argument('-v', type=int, default=0)
-parser.add_argument('--debug', action='store_true')
-parser.add_argument('--alu', action='store_true')
+parser.add_argument('-v', type=int, default=0, help='Index of the group used as verification group. Should be 0-9.')
+parser.add_argument('--debug', action='store_true', help='Use [debug] configuration, instead of [run]')
+parser.add_argument('--alu', action='store_true', help='Use Alu information to (hopefully) increase accuracy.')
 args = parser.parse_args()
 if args.v < 0 or args.v > 9:
     raise ArgumentError("VERIFICATION_GROUP must be between 0-9")
