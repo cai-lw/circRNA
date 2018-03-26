@@ -1,5 +1,5 @@
 # circRNA
-Detecting circRNA with simple LSTM RNN.
+A course project of *Computational Biology* at Tsinghua University in the Spring semester of 2016
 
 ## Requirements
 
